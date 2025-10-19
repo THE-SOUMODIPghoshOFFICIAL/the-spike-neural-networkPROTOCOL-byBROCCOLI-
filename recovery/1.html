@@ -16,33 +16,9 @@
     />
   </head>
   <body>
-    <div class="background-layer" id="background-layer"></div>
-
     <header class="main-header">
       <h1>COGNIspike</h1>
-      <div class="dropdown-menu" id="settings-dropdown">
-        <button
-          class="dropdown-toggle"
-          id="dropdown-toggle-button"
-          aria-label="Open Menu"
-        >
-          <img
-            src="{{ url_for('static', filename='assets/cogwheel.png') }}"
-            alt="Settings"
-          />
-        </button>
-        <div class="dropdown-content" id="dropdown-content">
-          <a
-            href="https://github.com/THE-SOUMODIPghoshOFFICIAL"
-            target="_blank"
-            rel="noopener noreferrer"
-            >Author Git Repo</a
-          >
-          <a href="#">Settings</a>
-        </div>
-      </div>
     </header>
-
     <main class="main-container">
       <div class="navigation-wheel-container">
         <div class="activation-center" id="activation-center">
@@ -129,8 +105,7 @@
                   type="file"
                   id="image-upload-classifier"
                   accept="image/*"
-                />
-                <span
+                /><span
                   id="file-name-classifier"
                   class="file-name-display"
                   aria-live="polite"
@@ -157,8 +132,7 @@
                   type="file"
                   id="image-upload-visualizer"
                   accept="image/*"
-                />
-                <span
+                /><span
                   id="file-name-visualizer"
                   class="file-name-display"
                   aria-live="polite"
@@ -212,77 +186,33 @@
 
           <div class="content-panel" id="guide-panel">
             <h2>CogniSpike Guide</h2>
-
             <h3>What are Spiking Neural Networks (SNNs)?</h3>
             <p>
-              Spiking Neural Networks are often called the "third generation" of
-              neural networks. Unlike traditional Artificial Neural Networks
-              (ANNs) that process continuous values in a single pass, SNNs are
-              inspired more directly by the brain. They operate on discrete,
-              asynchronous events called <strong>spikes</strong> that occur over
-              time.
+              SNNs are a type of neural network inspired by the brain. Unlike
+              traditional networks that use continuous values, SNNs communicate
+              using discrete "spikes" or pulses, similar to biological neurons.
+              This makes them potentially more power-efficient and better suited
+              for processing information that changes over time.
             </p>
-            <p>
-              This event-driven nature makes them computationally powerful and
-              potentially much more energy-efficient, especially when run on
-              specialized neuromorphic hardware. Key components include leaky
-              integrate-and-fire (LIF) neurons, which accumulate input signals
-              (current) and fire a spike only when their membrane potential
-              crosses a threshold.
-            </p>
-
             <h3>What is Spike Encoding?</h3>
             <p>
-              Since SNNs understand spikes, not raw data like pixel values, we
-              must first convert our input into a spike train. This process is
-              called <strong>spike encoding</strong>. This dashboard uses
-              <strong>Rate Encoding</strong>, where the intensity of a pixel
-              determines the firing rate of a corresponding neuron. A brighter
-              pixel will cause its neuron to fire more frequently over the
-              simulation time.
+              Since SNNs understand spikes, not pixel values, we need to convert
+              standard data (like images) into spike patterns. This translation
+              process is called spike encoding. This dashboard uses "Rate
+              Encoding," where brighter pixels fire more spikes over a short
+              time window.
             </p>
-
-            <h3>How This Dashboard Works</h3>
-            <ul>
-              <li>
-                <strong>Digit Classifier:</strong> An uploaded image is
-                converted into spike trains using rate encoding. These spikes
-                are fed into the pre-trained SNN over 25 time steps. The output
-                neuron that fires the most indicates the model's prediction.
-              </li>
-              <li>
-                <strong>Spike Visualizer:</strong> Generates a raster plot, a
-                common way to view SNN activity. Each dot on the plot shows a
-                single neuron (y-axis) firing a spike at a specific moment in
-                time (x-axis).
-              </li>
-              <li>
-                <strong>Live Encoder:</strong> Creates an animated GIF to
-                visualize the rate encoding process itself, showing how the
-                static image is transformed into a dynamic, time-based pattern
-                of spikes.
-              </li>
-            </ul>
-
             <h3>About CogniSpike</h3>
             <p>
-              This dashboard was created to make the abstract principles of
-              Spiking Neural Networks tangible and interactive. By allowing you
-              to see how data is encoded and processed as spikes, we hope to
-              provide a clearer intuition for this exciting field of AI.
+              This dashboard demonstrates SNN principles. You can classify
+              handwritten digits, visualize how images are encoded into spikes
+              (raster plot), or see an animation of the encoding process (live
+              encode).
             </p>
-          </div>
-
-          <!-- New Back Button -->
-          <div class="card-footer">
-            <button class="back-button" id="back-to-hub-button">
-              &larr; Return to Hub
-            </button>
           </div>
         </div>
       </div>
     </main>
-
     <script src="{{ url_for('static', filename='script.js') }}"></script>
   </body>
 </html>

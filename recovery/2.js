@@ -1,60 +1,37 @@
-// script.js - CogniSpike Dashboard Interaction - Refined & Corrected Blur
+// script.js - CogniSpike Dashboard Interaction
 
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Get Elements ---
   const wheelOptions = document.querySelectorAll(".wheel-option");
   const contentOverlay = document.getElementById("content-overlay");
   const mainContentCard = document.getElementById("main-content-card");
   const contentPanels = document.querySelectorAll(".content-panel");
-  const backgroundLayer = document.getElementById("background-layer"); // <<< CORRECT: Get background layer
+  const mainContainer = document.querySelector(".main-container");
   const closeCardButton = document.getElementById("close-card-button");
-  const backToHubButton = document.getElementById("back-to-hub-button");
-  // Navigation elements related to hover are now handled by CSS :hover
-  const dropdownButton = document.getElementById("dropdown-toggle-button");
-  const dropdownContent = document.getElementById("dropdown-content");
 
-  // --- Panel Switching (Triggered by Wheel Option Click) ---
+  // --- Panel Switching ---
   wheelOptions.forEach((option) => {
     option.addEventListener("click", () => {
       const targetPanelId = option.getAttribute("data-target");
 
+      // Hide all panels first
       contentPanels.forEach((panel) => panel.classList.remove("active"));
-      const targetPanel = document.getElementById(targetPanelId);
 
+      // Show the target panel
+      const targetPanel = document.getElementById(targetPanelId);
       if (targetPanel) {
         targetPanel.classList.add("active");
+        // Show the overlay and card
         contentOverlay.classList.add("visible");
-        backgroundLayer.classList.add("blurred"); // <<< CORRECT: Blur background layer
+        mainContainer.classList.add("blurred"); // Blur background
       }
     });
   });
 
-  // --- Close Card Logic ---
-  function closeCard() {
+  // --- Close Card Button ---
+  closeCardButton.addEventListener("click", () => {
     contentOverlay.classList.remove("visible");
-    backgroundLayer.classList.remove("blurred"); // <<< CORRECT: Unblur background layer
-    contentPanels.forEach((panel) => panel.classList.remove("active"));
-  }
-
-  closeCardButton.addEventListener("click", closeCard);
-  backToHubButton.addEventListener("click", () => {
-    closeCard();
+    mainContainer.classList.remove("blurred"); // Unblur background
   });
-
-  // --- Dropdown Menu Logic ---
-  if (dropdownButton && dropdownContent) {
-    dropdownButton.addEventListener("click", (event) => {
-      event.stopPropagation(); // Prevent window click event from closing it immediately
-      dropdownContent.classList.toggle("show");
-      dropdownButton.classList.toggle("active");
-    });
-
-    // Close dropdown if clicked outside
-    window.addEventListener("click", (event) => {
-      dropdownContent.classList.remove("show");
-      dropdownButton.classList.remove("active");
-    });
-  }
 
   // --- File Input Name Display ---
   function setupFileInputListener(inputId, spanId) {
@@ -74,22 +51,24 @@ document.addEventListener("DOMContentLoaded", () => {
   setupFileInputListener("image-upload-visualizer", "file-name-visualizer");
   setupFileInputListener("image-upload-encoder", "file-name-encoder");
 
-  // --- Form Submission Handler ---
+  // --- Placeholder Form Submission Handlers ---
+  // We will replace these with actual fetch calls later
+
   function handleFormSubmit(formId, spinnerId, resultsId, endpoint) {
     const form = document.getElementById(formId);
-    if (!form) return;
     const spinner = document.getElementById(spinnerId);
     const resultsDiv = document.getElementById(resultsId);
     const submitButton = form.querySelector('button[type="submit"]');
     const fileInput = form.querySelector('input[type="file"]');
-    if (!spinner || !resultsDiv || !submitButton || !fileInput) return;
+
+    if (!form) return;
 
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
       const file = fileInput.files[0];
 
       if (!file) {
-        resultsDiv.innerHTML = `<span style="color: #ffcc00;">Please select an image file first.</span>`;
+        resultsDiv.textContent = "Please select an image file first.";
         resultsDiv.style.display = "block";
         return;
       }
@@ -106,58 +85,48 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           body: formData,
         });
-        resultsDiv.innerHTML = "";
 
         if (!response.ok) {
-          let errorMsg = "Server responded with an error.";
-          try {
-            const errorData = await response.json();
-            errorMsg = errorData.error || errorMsg;
-          } catch (jsonError) {
-            errorMsg = `Server error: ${response.status} ${response.statusText}`;
-          }
-          throw new Error(errorMsg);
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Server responded with an error.");
         }
 
         const data = await response.json();
 
+        // Clear previous content and hide images
+        resultsDiv.textContent = "";
+        const existingImg = resultsDiv.querySelector("img");
+        if (existingImg) existingImg.style.display = "none";
+
         if (endpoint === "/evaluate-image") {
-          resultsDiv.innerHTML = `<strong>Prediction: ${data.prediction}</strong><br>${data.message}`;
+          resultsDiv.textContent = data.message;
         } else if (endpoint === "/visualize") {
           const img = document.getElementById("raster-plot-image");
           if (img && data.raster_plot_url) {
+            // Add a timestamp to prevent browser caching
             img.src = `${data.raster_plot_url}?t=${new Date().getTime()}`;
             img.style.display = "block";
-            resultsDiv.innerHTML = "Raster plot generated successfully.";
-          } else {
-            throw new Error("Raster plot URL not received from server.");
+            resultsDiv.textContent = "Raster plot generated successfully.";
           }
         } else if (endpoint === "/live-encoder") {
           const img = document.getElementById("spike-gif-image");
           if (img && data.spike_gif_url) {
             img.src = `${data.spike_gif_url}?t=${new Date().getTime()}`;
             img.style.display = "block";
-            resultsDiv.innerHTML = "Spike GIF generated successfully.";
-          } else {
-            throw new Error("Spike GIF URL not received from server.");
+            resultsDiv.textContent = "Spike GIF generated successfully.";
           }
         }
         resultsDiv.style.display = "block";
       } catch (error) {
-        resultsDiv.innerHTML = `<span style="color: #ff6666;">Error: ${error.message}</span>`;
+        resultsDiv.textContent = `Error: ${error.message}`;
         resultsDiv.style.display = "block";
-        const rasterImg = document.getElementById("raster-plot-image");
-        const gifImg = document.getElementById("spike-gif-image");
-        if (rasterImg) rasterImg.style.display = "none";
-        if (gifImg) gifImg.style.display = "none";
       } finally {
         spinner.style.display = "none";
         submitButton.disabled = false;
       }
-    }); // End form submit listener
-  } // End handleFormSubmit
+    });
+  }
 
-  // Attach handlers
   handleFormSubmit(
     "upload-form-classifier",
     "loading-spinner-classifier",
@@ -176,4 +145,4 @@ document.addEventListener("DOMContentLoaded", () => {
     "results-encoder",
     "/live-encoder"
   );
-}); // End DOMContentLoaded
+});

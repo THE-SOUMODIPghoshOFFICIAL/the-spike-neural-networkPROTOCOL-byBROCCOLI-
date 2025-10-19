@@ -1,4 +1,4 @@
-/* style.css - CogniSpike Dashboard - Refined & Corrected Blur */
+/* style.css - CogniSpike Dashboard - Refined */
 
 /* --- Basic Setup & Fonts --- */
 :root {
@@ -23,37 +23,58 @@ body {
   background-color: #020a12; /* Dark blue fallback */
   color: var(--text-color);
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
-  /* Removed flex display from body */
 }
 
-/* --- Background Layer (Handles Background Image and Blur) --- */
-.background-layer {
-  position: fixed; /* Keep it fixed behind everything */
-  top: 0;
-  left: 0;
+h1,
+h2,
+h3 {
+  font-family: var(--font-header);
+  color: var(--highlight-color);
+  font-weight: 700;
+  margin: 0 0 20px 0;
+  text-shadow: 0 0 8px var(--primary-glow-color),
+    0 0 12px rgba(0, 255, 255, 0.3);
+}
+
+h2 {
+  font-size: 1.8rem;
+}
+h3 {
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+p {
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-size: 1rem;
+  color: var(--text-secondary-color);
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* --- Background --- */
+.main-container {
+  position: relative;
   width: 100vw;
   height: 100vh;
-  background-image: url("assets/background.jpg"); /* Apply background here */
+  background-image: url("assets/background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -1; /* Place it behind other content */
   transition: filter 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Apply blur ONLY to the background layer */
-.background-layer.blurred {
+.main-container.blurred {
   filter: blur(12px) brightness(0.5);
-}
-
-/* --- Main Container (Holds Wheel and Overlay) --- */
-.main-container {
-  position: relative; /* Context for absolute children */
-  width: 100vw;
-  height: 100vh;
-  /* NO background or filter styles here */
-  z-index: 1; /* Above background */
 }
 
 /* --- Header --- */
@@ -62,103 +83,18 @@ body {
   top: 0;
   left: 0;
   width: 100%;
-  padding: 15px 40px;
+  padding: 20px 40px;
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), transparent);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  z-index: 100; /* Header above wheel and overlay */
-  box-sizing: border-box;
+  text-align: left;
+  z-index: 100;
 }
 
 .main-header h1 {
   margin: 0;
   font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: 3px;
+  font-weight: 500;
+  letter-spacing: 2px;
   text-transform: uppercase;
-  font-family: var(--font-header);
-  color: #ffffff; /* White color */
-  /* White glow effect */
-  text-shadow: 0 0 7px rgba(255, 255, 255, 0.6), 0 0 10px rgba(0, 255, 255, 0.3);
-  transition: text-shadow 0.4s ease-in-out, color 0.4s ease-in-out;
-  cursor: pointer;
-}
-
-.main-header h1:hover {
-  color: var(--highlight-color); /* Bright cyan on hover */
-  /* More intense glow on hover */
-  text-shadow: 0 0 10px var(--primary-glow-color),
-    0 0 25px var(--primary-glow-color), 0 0 40px rgba(0, 255, 255, 0.5);
-}
-
-/* --- Dropdown Menu --- */
-.dropdown-menu {
-  position: relative;
-}
-
-.dropdown-toggle {
-  background: transparent;
-  border: 1px solid var(--glass-border);
-  color: var(--text-color);
-  font-size: 1.5rem;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.3s ease;
-}
-
-.dropdown-toggle img {
-  width: 65%;
-  height: 65%;
-  object-fit: contain;
-  /* Filter to make the icon match the light-blue text color */
-  filter: invert(90%) sepia(15%) saturate(400%) hue-rotate(175deg)
-    brightness(110%) contrast(95%);
-}
-
-.dropdown-toggle:hover,
-.dropdown-toggle.active {
-  color: var(--highlight-color);
-  border-color: var(--glass-border-hover);
-  transform: rotate(45deg);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-}
-
-.dropdown-content {
-  display: none; /* Hidden by default */
-  position: absolute;
-  right: 0;
-  top: calc(100% + 10px);
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 10px;
-  min-width: 160px;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
-  z-index: 1;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  overflow: hidden;
-}
-
-.dropdown-content.show {
-  display: block;
-}
-
-.dropdown-content a {
-  color: var(--text-secondary-color);
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-.dropdown-content a:hover {
-  background-color: rgba(0, 255, 255, 0.15);
-  color: var(--highlight-color);
 }
 
 /* --- Navigation Wheel --- */
@@ -170,7 +106,7 @@ body {
   width: var(--center-size);
   height: var(--center-size);
   cursor: pointer;
-  z-index: 50; /* Above background, below active overlay */
+  z-index: 10;
 }
 
 .main-operational-wheel {
@@ -240,9 +176,10 @@ body {
   transition: opacity 0.4s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1),
     background-color 0.3s, box-shadow 0.3s;
   display: flex;
-  justify-content: center; /* Center wrapper */
-  align-items: center; /* Center wrapper */
-  padding: 0; /* Remove padding if wrapper handles it */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
   box-sizing: border-box;
 }
 
@@ -320,9 +257,10 @@ body {
   background-color: rgba(0, 255, 255, 0.2);
   box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
   border-color: var(--glass-border-hover);
+  /* transform is handled by the more specific selectors below */
 }
 
-/* Re-apply positioning transforms + scale on hover */
+/* Re-apply positioning transforms on hover */
 .navigation-wheel-container:hover .wheel-option:nth-child(1):hover {
   transform: translateY(calc(var(--wheel-size) / -2.3)) rotate(0deg) scale(1.15);
 }
@@ -369,7 +307,7 @@ body {
 
 /* --- Content Overlay and Glassy Card --- */
 .content-overlay {
-  position: fixed; /* Use fixed to cover viewport */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -377,11 +315,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 10, 20, 0.5); /* Semi-transparent overlay */
+  background-color: rgba(0, 10, 20, 0.5);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.6s ease, visibility 0s linear 0.6s; /* Match visibility delay */
-  z-index: 200; /* Above everything except maybe modals */
+  transition: opacity 0.6s ease, visibility 0s linear 0.6s;
+  z-index: 20;
 }
 
 .content-overlay.visible {
@@ -413,7 +351,7 @@ body {
 .content-overlay.visible .glassy-card {
   transform: translateY(0) scale(1);
   opacity: 1;
-  transition-delay: 0.1s; /* Slight delay for effect */
+  transition-delay: 0.1s;
 }
 
 .close-button {
@@ -428,8 +366,6 @@ body {
   font-weight: 300;
   padding: 0;
   transition: color 0.3s ease, transform 0.3s ease;
-  cursor: pointer; /* Ensure cursor changes */
-  z-index: 10; /* Ensure it's above other card content */
 }
 
 .close-button:hover {
@@ -450,9 +386,7 @@ body {
 /* --- Form Elements --- */
 .form-group {
   margin-bottom: 25px;
-  text-align: left; /* Align label/button/span */
-  display: flex; /* Use flexbox for alignment */
-  align-items: center;
+  text-align: left;
 }
 
 .custom-file-upload {
@@ -465,8 +399,7 @@ body {
   border-radius: 8px;
   font-size: 0.9rem;
   font-weight: 600;
-  transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
-  white-space: nowrap; /* Prevent wrapping */
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .custom-file-upload:hover {
@@ -484,10 +417,6 @@ input[type="file"] {
   font-style: italic;
   color: var(--text-secondary-color);
   font-size: 0.9rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* Show ... if filename is too long */
-  flex-grow: 1; /* Allow span to take remaining space */
 }
 
 button[type="submit"] {
@@ -503,8 +432,6 @@ button[type="submit"] {
   width: auto;
   box-shadow: 0 4px 15px rgba(0, 191, 255, 0.2);
   transition: all 0.3s ease;
-  display: block; /* Make it block level */
-  margin: 20px auto 0 auto; /* Center submit button */
 }
 
 button[type="submit"]:hover {
@@ -513,11 +440,11 @@ button[type="submit"]:hover {
 }
 
 button[type="submit"]:disabled {
-  background: #555 !important; /* Ensure override */
+  background: #555;
   cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
-  color: #999 !important;
+  transform: none;
+  box-shadow: none;
+  color: #999;
 }
 
 /* --- Results and Loading --- */
@@ -589,46 +516,12 @@ button[type="submit"]:disabled {
   background: #00a0d1;
 }
 
-/* --- Card Footer & Back Button --- */
-.card-footer {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid var(--glass-border);
-  text-align: center;
-}
-
-.back-button {
-  background: transparent;
-  border: 1px solid var(--glass-border-hover);
-  color: var(--text-secondary-color);
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.back-button:hover {
-  background-color: rgba(0, 255, 255, 0.15);
-  color: var(--highlight-color);
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-}
-
 /* --- Responsive Design --- */
 @media (max-width: 768px) {
   :root {
     --wheel-size: 280px;
     --center-size: 75px;
     --option-size: 60px;
-  }
-  .main-header {
-    padding: 15px 20px;
-  }
-  .main-header h1 {
-    font-size: 1.3rem;
   }
   .glassy-card {
     width: 92%;
@@ -640,16 +533,5 @@ button[type="submit"]:disabled {
   }
   p {
     font-size: 0.95rem;
-  }
-  .form-group {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .file-name-display {
-    margin-left: 0;
-    margin-top: 10px;
-  }
-  button[type="submit"] {
-    width: 100%;
   }
 }

@@ -56,22 +56,14 @@ class SpikingNet(nn.Module):
 
         # Define the spiking neuron model: Leaky Integrate-and-Fire (LIF)
         beta = 0.95 # Neuron decay rate
+        spike_grad = surrogate.fast_sigmoid(slope=25)
         
-        # Fix: Remove surrogate_function parameter
-        self.lif1 = snn.Leaky(beta=beta, spike_grad=surrogate.fast_sigmoid())
-        self.lif2 = snn.Leaky(beta=beta, spike_grad=surrogate.fast_sigmoid())
-        # NOTE: The surrogate function is now a class attribute
-        self.spike_grad = surrogate.fast_sigmoid()
-
         # Layer 1: Fully-connected layer followed by a LIF neuron
         self.fc1 = nn.Linear(num_inputs, num_hidden)
-        # Fix: Remove the surrogate_function argument from the constructor
-        self.lif1 = snn.Leaky(beta=beta)
-
+        self.lif1 = snn.Leaky(beta=beta, spike_grad=spike_grad)
         # Layer 2: Fully-connected layer followed by a LIF neuron
         self.fc2 = nn.Linear(num_hidden, num_outputs)
-        # Fix: Remove the surrogate_function argument from the constructor
-        self.lif2 = snn.Leaky(beta=beta)
+        self.lif2 = snn.Leaky(beta=beta, spike_grad=spike_grad)
 
     def forward(self, x):
         # Initialize membrane potentials and outputs for each layer
@@ -88,12 +80,10 @@ class SpikingNet(nn.Module):
         for step in range(num_steps):
             # Input to the first layer at the current time step
             cur1 = self.fc1(x[step].view(x[step].size(0), -1))
-            # Fix: Pass the surrogate function when calling the neuron
             spk1, mem1 = self.lif1(cur1, mem1)
 
             # Input to the second layer
             cur2 = self.fc2(spk1)
-            # Fix: Pass the surrogate function when calling the neuron
             spk2, mem2 = self.lif2(cur2, mem2)
 
             # Record the outputs
